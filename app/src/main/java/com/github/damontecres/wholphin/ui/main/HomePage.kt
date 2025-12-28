@@ -371,47 +371,40 @@ fun HomePageContent(
                                                         ?.takeIf { it > 0 }
                                                         ?.let { abbreviateNumber(it) }
                                             }
-                                        BannerCard(
-                                            name = item?.data?.seriesName ?: item?.name,
-                                            item = item,
-                                            aspectRatio = AspectRatios.TALL,
-                                            cornerText = cornerText,
-                                            played = item?.data?.userData?.played ?: false,
-                                            favorite = item?.favorite ?: false,
-                                            playPercent =
-                                                item?.data?.userData?.playedPercentage
-                                                    ?: 0.0,
-                                            onClick = onClick,
-                                            onLongClick = onLongClick,
-                                            modifier =
-                                                cardModifier
-                                                    .ifElse(
-                                                        focusedItem == item,
-                                                        Modifier.focusRequester(focusRequester),
-                                                    ).ifElse(
-                                                        RowColumn(rowIndex, index) == position,
-                                                        Modifier.focusRequester(
-                                                            positionFocusRequester,
-                                                        ),
-                                                    ).onFocusChanged {
-                                                        if (it.isFocused) {
-                                                            val nonEmptyRowBefore =
-                                                                homeRows
-                                                                    .subList(0, rowIndex)
-                                                                    .count {
-                                                                        it is HomeRowLoadingState.Success && it.items.isEmpty()
-                                                                    }
-                                                            onFocusPosition?.invoke(
-                                                                RowColumn(
-                                                                    rowIndex - nonEmptyRowBefore,
-                                                                    index,
-                                                                ),
-                                                            )
-                                                        }
-                                                    },
-                                            interactionSource = null,
-                                            cardHeight = Cards.height2x3,
-                                        )
+                                        // Check if the item is an Episode
+val isEpisode = item?.type == BaseItemKind.EPISODE
+
+BannerCard(
+    name = item?.data?.seriesName ?: item?.name,
+    item = item,
+    // If it's an Episode, use WIDE. If it's a Movie/Series, use TALL.
+    aspectRatio = if (isEpisode) AspectRatios.WIDE else AspectRatios.TALL,
+    cornerText = cornerText,
+    played = item?.data?.userData?.played ?: false,
+    favorite = item?.favorite ?: false,
+    playPercent = item?.data?.userData?.playedPercentage ?: 0.0,
+    onClick = onClick,
+    onLongClick = onLongClick,
+    modifier = cardModifier
+        .ifElse(
+            focusedItem == item,
+            Modifier.focusRequester(focusRequester),
+        ).ifElse(
+            RowColumn(rowIndex, index) == position,
+            Modifier.focusRequester(positionFocusRequester),
+        ).onFocusChanged {
+            if (it.isFocused) {
+                val nonEmptyRowBefore = homeRows
+                    .subList(0, rowIndex)
+                    .count { it is HomeRowLoadingState.Success && it.items.isEmpty() }
+                onFocusPosition?.invoke(RowColumn(rowIndex - nonEmptyRowBefore, index))
+            }
+        },
+    interactionSource = null,
+    // IMPORTANT: You might need to adjust height logic too, or just leave it.
+    // Usually Cards.height2x3 is fine as a base, the aspectRatio handles the width.
+    cardHeight = Cards.height2x3, 
+)
                                     },
                                 )
                             }

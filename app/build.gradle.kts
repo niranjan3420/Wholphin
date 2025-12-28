@@ -21,18 +21,6 @@ val isCI = if (System.getenv("CI") != null) System.getenv("CI").toBoolean() else
 val shouldSign = isCI && System.getenv("KEY_ALIAS") != null
 val ffmpegModuleExists = project.file("libs/lib-decoder-ffmpeg-release.aar").exists()
 
-val gitTags =
-    providers
-        .exec { commandLine("git", "tag", "--list", "v*", "p*") }
-        .standardOutput.asText
-        .get()
-
-val gitDescribe =
-    providers
-        .exec { commandLine("git", "describe", "--tags", "--long", "--match=v*") }
-        .standardOutput.asText
-        .getOrElse("v0.0.0")
-
 android {
     namespace = "com.github.damontecres.wholphin"
     compileSdk = 36
@@ -41,8 +29,8 @@ android {
         applicationId = "com.github.damontecres.wholphin"
         minSdk = 23
         targetSdk = 36
-        versionCode = gitTags.trim().lines().size
-        versionName = gitDescribe.trim().removePrefix("v").ifBlank { "0.0.0" }
+        versionCode = 1
+        versionName = "v2.0.0-1-g123456"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

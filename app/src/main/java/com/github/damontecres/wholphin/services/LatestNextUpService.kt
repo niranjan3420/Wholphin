@@ -66,7 +66,7 @@ class LatestNextUpService
                     .getResumeItems(request)
                     .content
                     .items
-                    .map { BaseItem.from(it, api, true) }
+                    .map { BaseItem.from(it, api, false) }
             return items
         }
 
@@ -92,7 +92,7 @@ class LatestNextUpService
                     .getNextUp(request)
                     .content
                     .items
-                    .map { BaseItem.from(it, api, true) }
+                    .map { BaseItem.from(it, api, false) }
             return nextUp
         }
 
